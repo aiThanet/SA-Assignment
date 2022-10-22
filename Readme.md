@@ -7,23 +7,23 @@ Author: Thanet Sirichanyaphong
 - [Context](#context)
 - [Solution](#solution)
   - [A. Troubleshooting](#a-troubleshooting)
+    - [Explanation](#explanation)
   - [B. Short term solution](#b-short-term-solution)
   - [C. Long term solution](#c-long-term-solution)
 - [References](#references)
 
 
 # Context
-Our customers have no concrete AWS knowledge background and are encountering an issue when launching a web application as a proof of concept. Therefore they contact us seeking guidance. First, troubleshooting the current implementation to make the web application operational with minimum effort. Secondly, proposing a short term solution to improve the availability, security, reliability, cost and performance before the project goes live. Lastly, they want to have a long term solution plan to operate their website on a large scale.
+My customer has no concrete AWS knowledge background and is encountering an issue when launching a web application as a proof of concept. Therefore they contact me seeking guidance the following issue. First, troubleshooting the current implementation to make the web application operational with minimum effort. Secondly, proposing a short term solution to improve the availability, security, reliability, cost and performance before the project goes live. Lastly, they want to have a long term solution plan to operate their website on a large scale.
 
 
 # Solution
 
 ## A. Troubleshooting
+
+- [Original Cloud Formation](AWS-SA-CloudFormation-v20190724.yaml)
+- [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml)
 ``` diff
-diff --git a/SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml b/SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml
-index 6eb008e..3d8bd92 100644
---- a/SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml
-+++ b/SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml
 @@ -148,12 +148,34 @@ Resources:
            DeviceIndex: 0
            SubnetId: !Ref 'PublicSubnetA'
@@ -98,8 +98,26 @@ index 6eb008e..3d8bd92 100644
              Value: sa-assignment
 ```
 
+### Explanation
+1. Validate the cloudformation template to check typology or misconfiguration
+```
+aws cloudformation validate-template --template-body file://$filepath
+```
+2. Verify EC2 configuration
+   -    As mentioned in [common cause for connection issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses), I found they didn't have rules to allow inbound traffic to both EC2 and ELB
+   - So I just added the ingress rule (inbound rule) to allow TCP:80 for http protocal in both EC2 and ELB security group
+3. Verify ELB configuration
+   - After checking instance and subnet attached to ELB, I found there is only one ec2 instance and one publicSubnetB that's not associate with the ec2 instance attached to current ELB
+   - So I created another ec2 instance (instance2) and attached it to publicSubnetB
+   - Now we have two ec2 instances, one in each availability zone (eu-west-1a, eu-west-1b)
+   - Then, we attached these 2 instances and subnets to ELB
+   - Since we only allow http, we need to configure [Healthcheck](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html) target instance for help check to HTTP protocal
+4. Verify network configuration
+   - I also check attachment of gateway to the VPC to enable connectivity between internal and the VPC (VPCGatewayAttachment)
+   - I aslo check association between subnet and route table. (SubnetRouteTableAssociation)
+
 ## B. Short term solution
 ## C. Long term solution
 
 # References
-
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses
