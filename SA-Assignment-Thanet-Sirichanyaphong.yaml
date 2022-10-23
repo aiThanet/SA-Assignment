@@ -203,7 +203,7 @@ Resources:
             FromPort: 80
             ToPort: 80
             CidrIp: 0.0.0.0/0
-            Description: Accessible to http
+            Description: Accessible to http from any source
         Tags:
           - Key: environment
             Value: sa-assignment
@@ -219,8 +219,8 @@ Resources:
           - IpProtocol: tcp
             FromPort: 80
             ToPort: 80
-            CidrIp: 0.0.0.0/0
-            Description: Accessible to http
+            SourceSecurityGroupId: !Ref SASGELB
+            Description: Accessible to http from ELB
         Tags:
           - Key: environment
             Value: sa-assignment

@@ -79,7 +79,7 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 +            FromPort: 80
 +            ToPort: 80
 +            CidrIp: 0.0.0.0/0
-+            Description: Accessible to http
++            Description: Accessible to http from any source
          Tags:
            - Key: environment
              Value: sa-assignment
@@ -91,8 +91,8 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 +          - IpProtocol: tcp
 +            FromPort: 80
 +            ToPort: 80
-+            CidrIp: 0.0.0.0/0
-+            Description: Accessible to http
++            SourceSecurityGroupId: !Ref SASGELB
++            Description: Accessible to http from ELB
          Tags:
            - Key: environment
              Value: sa-assignment
@@ -120,4 +120,5 @@ aws cloudformation validate-template --template-body file://$filepath
 ## C. Long term solution
 
 # References
-https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses
+- [Troubleshooting instances connecting issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses)
+- [Building a serverless web application architecture](https://aws.amazon.com/blogs/publicsector/building-serverless-web-application-architecture-aws-secure-environment-accelerator-asea/)
