@@ -23,6 +23,9 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 
 - [Original Cloud Formation](AWS-SA-CloudFormation-v20190724.yaml)
 - [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml)
+
+![Q1 comparison](Assets/SA_Assignment_Compare_Init_vs_Q1.jpg)
+
 ``` diff
 @@ -148,12 +148,34 @@ Resources:
            DeviceIndex: 0
