@@ -13,6 +13,8 @@ Author: Thanet Sirichanyaphong
     - [Architecture](#architecture-1)
     - [Explanation](#explanation-1)
   - [C. Long term solution](#c-long-term-solution)
+    - [Architecture](#architecture-2)
+    - [Explanation](#explanation-2)
 - [References](#references)
 
 
@@ -139,7 +141,15 @@ aws cloudformation validate-template --template-body file://$filepath
 
 ## C. Long term solution
 
+### Architecture
+![Q2 Architecture](Assets/SA_Assignment-Q3.jpg)
+
+### Explanation
+1. 
+
 # References
 - [Troubleshooting instances connecting issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses)
 - [Building a serverless web application architecture](https://aws.amazon.com/blogs/publicsector/building-serverless-web-application-architecture-aws-secure-environment-accelerator-asea/)
 - [Set up NAT gateway for a private subnet](https://aws.amazon.com/premiumsupport/knowledge-center/nat-gateway-vpc-private-subnet/)
+- [Limit access to your origins using the AWS-managed prefix list for Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/)
+- [Working with AWS RDS proxy endpoint on read replica with SQLAlchemy](https://medium.com/@james.li/working-with-aws-rds-proxy-endpoint-on-read-replica-with-sqlalchemy-6209353151f1)
