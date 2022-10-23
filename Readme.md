@@ -7,8 +7,11 @@ Author: Thanet Sirichanyaphong
 - [Context](#context)
 - [Solution](#solution)
   - [A. Troubleshooting](#a-troubleshooting)
+    - [Architecture](#architecture)
     - [Explanation](#explanation)
   - [B. Short term solution](#b-short-term-solution)
+    - [Architecture](#architecture-1)
+    - [Explanation](#explanation-1)
   - [C. Long term solution](#c-long-term-solution)
 - [References](#references)
 
@@ -21,6 +24,7 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 
 ## A. Troubleshooting
 
+### Architecture
 - [Original Cloud Formation](AWS-SA-CloudFormation-v20190724.yaml)
 - [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml)
 
@@ -120,6 +124,14 @@ aws cloudformation validate-template --template-body file://$filepath
    - I aslo check association between subnet and route table. (SubnetRouteTableAssociation)
 
 ## B. Short term solution
+
+### Architecture
+![Q2 Architecture](Assets/SA_Assignment-Q2.jpg)
+
+### Explanation
+1. The first entry service I suggested is **Route53** for premium DNS, since Route53 can act similarly to a load balancer. It'll perform health check and only route user to healhty server. These can help improve availability and reliability because it prevent the problem in the first place at the DNS level.
+2. To reinforce the security, we move EC2 instance to private subnet and only allow ingress
+
 ## C. Long term solution
 
 # References
