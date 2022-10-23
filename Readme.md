@@ -129,11 +129,17 @@ aws cloudformation validate-template --template-body file://$filepath
 ![Q2 Architecture](Assets/SA_Assignment-Q2.jpg)
 
 ### Explanation
-1. The first entry service I suggested is **Route53** for premium DNS, since Route53 can act similarly to a load balancer. It'll perform health check and only route user to healhty server. These can help improve availability and reliability because it prevent the problem in the first place at the DNS level.
-2. To reinforce the security, we move EC2 instance to private subnet and only allow ingress
+1. The first entry service I suggested is **Route53** for premium DNS, since Route53 can act similarly to a load balancer. It'll perform health check and only route user to healhty servers. These can help improve availability and reliability because it prevent the problem in the first place at the DNS level.
+2. The next entry point of VPC, is an **Application Load Balancer** to route all traffic only to the healthy instances of your web server. This also help adding more security due to closure of your instance and only restrict accessibility only via the ALB.
+3. To reinforce the security, I also move EC2 instance to private subnet and only allow traffic from ALB in **Security Group**.
+4. For initiation step to set up the instance, sometimes it need to access internet to download some package dependencies. So I need to add **NAT gateway** to allows EC2 instances in private subnet to establish outbound connections to internet without allowing inbound connections to the EC2 instance directly.
+5. I also added **Auto Scaling Group** with minimun 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower the threshold.
+6. Same suggestion for database layer, private subnet and Security Group will help ensure the security. If the customer want to go with SQL database due to transaction guarantee, high consistency and strict schema design, I will recommend AWS RDS with one standby database to help instantly recover when the active one is down.
+
 
 ## C. Long term solution
 
 # References
 - [Troubleshooting instances connecting issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses)
 - [Building a serverless web application architecture](https://aws.amazon.com/blogs/publicsector/building-serverless-web-application-architecture-aws-secure-environment-accelerator-asea/)
+- [Set up NAT gateway for a private subnet](https://aws.amazon.com/premiumsupport/knowledge-center/nat-gateway-vpc-private-subnet/)
