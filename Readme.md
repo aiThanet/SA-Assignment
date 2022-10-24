@@ -19,7 +19,7 @@ Author: Thanet Sirichanyaphong
 
 
 # Context
-My customer has no concrete AWS knowledge background and is encountering an issue when launching a web application as a proof of concept. Therefore they contact me seeking guidance the following issue. First, troubleshooting the current implementation to make the web application operational with minimum effort. Secondly, proposing a short term solution to improve the availability, security, reliability, cost and performance before the project goes live. Lastly, they want to have a long term solution plan to operate their website on a large scale.
+My customer has no concrete AWS knowledge background and is encountering an issue when launching a web application as a proof of concept. Therefore they contact me seeking guidance on the following issue. First, troubleshoot the current implementation to make the web application operational with minimum effort. Secondly, proposing a short-term solution to improve the availability, security, reliability, cost, and performance before the project goes live. Lastly, they want to have a long-term solution plan to operate their website on a large scale.
 
 
 # Solution
@@ -28,7 +28,7 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 
 ### Architecture
 - [Original Cloud Formation](AWS-SA-CloudFormation-v20190724.yaml)
-- [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml)
+- [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml)
 
 ![Q1 comparison](Assets/SA_Assignment-Compare-Q1.jpg)
 
@@ -108,22 +108,22 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 ```
 
 ### Explanation
-1. Validate the cloudformation template to check typology or misconfiguration
+1. Validate the CloudFormation template to check typology or misconfiguration
 ```
 aws cloudformation validate-template --template-body file://$filepath
 ```
 2. Verify EC2 configuration
    -    As mentioned in [common cause for connection issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses), I found they didn't have rules to allow inbound traffic to both EC2 and ELB
-   - So I just added the ingress rule (inbound rule) to allow TCP:80 for http protocal in both EC2 and ELB security group
+   - So I just added the ingress rule (inbound rule) to allow TCP:80 for HTTP protocol in both EC2 and ELB security group
 3. Verify ELB configuration
-   - After checking instance and subnet attached to ELB, I found there is only one ec2 instance and one publicSubnetB that's not associate with the ec2 instance attached to current ELB
+   - After checking the instance and subnet attached to ELB, I found there is only one ec2 instance and one publicSubnetB that's not associated with the ec2 instance attached to the current ELB
    - So I created another ec2 instance (instance2) and attached it to publicSubnetB
    - Now we have two ec2 instances, one in each availability zone (eu-west-1a, eu-west-1b)
    - Then, we attached these 2 instances and subnets to ELB
-   - Since we only allow http, we need to configure [Healthcheck](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html) target instance for help check to HTTP protocal
+   - Since we only allow HTTP, we need to configure [Healthcheck](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html) target instance to help check on HTTP protocol
 4. Verify network configuration
-   - I also check attachment of gateway to the VPC to enable connectivity between internal and the VPC (VPCGatewayAttachment)
-   - I aslo check association between subnet and route table. (SubnetRouteTableAssociation)
+   - I also check the attachment of the gateway to the VPC to enable connectivity between internal and the VPC (VPCGatewayAttachment)
+   - I also check the association between the subnet and route table. (SubnetRouteTableAssociation)
 
 ## B. Short term solution
 
@@ -131,13 +131,13 @@ aws cloudformation validate-template --template-body file://$filepath
 ![Q2 Architecture](Assets/SA_Assignment-Q2.jpg)
 
 ### Explanation
-1. The first entry service I suggested is **Route53** for premium DNS, since Route53 can act similarly to a load balancer. It'll perform health check and only route user to healhty servers. These can help improve availability and reliability because it prevent the problem in the first place at the DNS level.
-2. The next entry point of VPC, is an **Application Load Balancer** to route all traffic only to the healthy instances of your web server. This also help adding more security due to closure of your instance and only restrict accessibility only via the ALB.
-3. To reinforce the security, using HTTPS instead of HTTP will help protect user from man-in-the-middle attack. In order to achieve this, make sure you configure the SSL/TLS server certificate on ALB. Apart from this, I also move EC2 instance to private subnet and only allow traffic from ALB in **Security Group**.
-4. For initiation step to set up the instance, sometimes it need to access internet to download some package dependencies. So I need to add **NAT gateway** to allows EC2 instances in private subnet to establish outbound connections to internet without allowing inbound connections to the EC2 instance directly.
-5. I also added **Auto Scaling Group** with minimun 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower the threshold.
-6. Same suggestion for database layer, private subnet and Security Group will help ensure the security. If the customer want to go with SQL database due to transaction guarantee, high consistency and strict schema design, I will recommend AWS RDS with one standby database to help instantly recover when the active one is down.
-7. For cost optimization, as we known many AWS service is pay-as-you-go which mean you only pay for what you use. For example Route53 will only charge for how much number of query. Plus, uses will be only query DNS once per session. Auto Scaling Group can also lower your bills by automatically scales up/down based on the load.
+1. The first entry service I suggested is **Route53** for premium DNS since Route53 can act similarly to a load balancer. It'll perform a health check and only route the users to healthy servers. These can help improve availability and reliability because they prevent the problem in the first place at the DNS level.
+2. The next entry point of VPC, is an **Application Load Balancer** to route all traffic only to the healthy instances of your web server. This also helps add more security due to the closure of your instance and only restricts accessibility only via the ALB.
+3. To reinforce security, using HTTPS instead of HTTP will help protect the users from man-in-the-middle attacks and make sure you configure the SSL/TLS server certificate on ALB. Apart from this, I also move the EC2 instances to private subnets and only allow traffic from ALB in **Security Group**.
+4. To set up the instance, sometimes it needs to access the internet to download some package dependencies. So I need to add **NAT gateway** to allow EC2 instances in private subnets to establish outbound connections to the internet without allowing inbound connections to the EC2 instance directly.
+5. I also added **Auto Scaling Group** with a minimum of 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower the threshold.
+6. Same suggestion for the database layer, private subnet and Security Group will help ensure security. If the customer wants to go with an SQL database due to transaction guarantee, high consistency, and defined schema design, I will recommend AWS RDS with one standby database to help instantly recover when the active one is down.
+7. For cost optimization, as we know many AWS service is pay-as-you-go whichs mean you only pay for what you use. For example, Route53 will only charge for how many numbers of query. Plus, users will be only query DNS once per session. Auto Scaling Group can also lower your bills by automatically scaling up/down based on the load.
 
 ## C. Long term solution
 
@@ -145,12 +145,12 @@ aws cloudformation validate-template --template-body file://$filepath
 ![Q2 Architecture](Assets/SA_Assignment-Q3.jpg)
 
 ### Explanation
-1. For long term solution, the scale of application should be increase by having more user access to the service. In order to guarantee the performance, I suggested to use **CloudFront** a content delivery network(CDN).
-2. A CDN can help improve the performance by caching all static contents over edge location across the worlds and serving the content more quickly and efficiently.
-3. To efficiently manage the storage and CDN, moving all static contents to S3 will help reduce your cost and CDN can serve the content better.
-4. I also integrate **Web Application Firewall** (WAF) with CloudFront to improve the security by filtering malicious traffic, especially to protect against OWSAP Top 10.
-5. To reinforcethe security, we only setup **Security Group** for ALB only allow prefix list IP from CloudFront to ensure all incoming traffic to ALB only from CloudFront.
-6. From ALB to our logic application also implement secure session to increase security by encrypting the communication.
+1. For a long-term solution, the scale of the application should be increased by having more user access to the service. To guarantee the performance, I suggested using **CloudFront** a content delivery network(CDN).
+2. A CDN can help improve performance by caching all static content over edge locations across the world and serving the content more quickly and efficiently.
+3. To efficiently manage the storage and CDN, moving all static content to S3 will help reduce your cost and CDN can serve the content better.
+4. I also integrate **Web Application Firewall** (WAF) with CloudFront to improve security by filtering malicious traffic, especially to protect against OWSAP Top 10.
+5. To reinforce security, we set up **Security Group** for ALB only allowing prefix list IP from CloudFront to ensure all incoming traffic to ALB only from CloudFront.
+6. From ALB to our logic application also implement secure sessions to increase security by encrypting the communication.
 
 # References
 - [Troubleshooting instances connecting issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses)
