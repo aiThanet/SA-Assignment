@@ -30,7 +30,7 @@ My customer has no concrete AWS knowledge background and is encountering an issu
 - [Original Cloud Formation](AWS-SA-CloudFormation-v20190724.yaml)
 - [Operational Cloud Formation](SA-Assignment-Thanet-Sirichanyaphong.yaml.yaml)
 
-![Q1 comparison](Assets/SA_Assignment_Compare_Init_vs_Q1.jpg)
+![Q1 comparison](Assets/SA_Assignment-Compare-Q1.jpg)
 
 ``` diff
 @@ -148,12 +148,34 @@ Resources:
@@ -137,7 +137,7 @@ aws cloudformation validate-template --template-body file://$filepath
 4. For initiation step to set up the instance, sometimes it need to access internet to download some package dependencies. So I need to add **NAT gateway** to allows EC2 instances in private subnet to establish outbound connections to internet without allowing inbound connections to the EC2 instance directly.
 5. I also added **Auto Scaling Group** with minimun 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower the threshold.
 6. Same suggestion for database layer, private subnet and Security Group will help ensure the security. If the customer want to go with SQL database due to transaction guarantee, high consistency and strict schema design, I will recommend AWS RDS with one standby database to help instantly recover when the active one is down.
-
+7. For cost optimization, as we known many AWS service is pay-as-you-go which mean you only pay for what you use. For example Route53 will only charge for how much number of query. Plus, uses will be only query DNS once per session. Auto Scaling Group can also lower your bills by automatically scales up/down based on the load.
 
 ## C. Long term solution
 
@@ -145,7 +145,12 @@ aws cloudformation validate-template --template-body file://$filepath
 ![Q2 Architecture](Assets/SA_Assignment-Q3.jpg)
 
 ### Explanation
-1. 
+1. For long term solution, the scale of application should be increase by having more user access to the service. In order to guarantee the performance, I suggested to use **CloudFront** a content delivery network(CDN).
+2. A CDN can help improve the performance by caching all static contents over edge location across the worlds and serving the content more quickly and efficiently.
+3. To efficiently manage the storage and CDN, moving all static contents to S3 will help reduce your cost and CDN can serve the content better.
+4. I also integrate **Web Application Firewall** (WAF) with CloudFront to improve the security by filtering malicious traffic, especially to protect against OWSAP Top 10.
+5. To reinforcethe security, we only setup **Security Group** for ALB only allow prefix list IP from CloudFront to ensure all incoming traffic to ALB only from CloudFront.
+6. From ALB to our logic application also implement secure session to increase security by encrypting the communication.
 
 # References
 - [Troubleshooting instances connecting issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses)
