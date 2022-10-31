@@ -116,10 +116,9 @@ aws cloudformation validate-template --template-body file://$filepath
    -    As mentioned in [common cause for connection issue](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesCommonCauses), I found they didn't have rules to allow inbound traffic to both EC2 and ELB
    - So I just added the ingress rule (inbound rule) to allow TCP:80 for HTTP protocol in both EC2 and ELB security group
 3. Verify ELB configuration
-   - After checking the instance and subnet attached to ELB, I found there is only one ec2 instance and one publicSubnetB that's not associated with the ec2 instance attached to the current ELB
-   - So I created another ec2 instance (instance2) and attached it to publicSubnetB
-   - Now we have two ec2 instances, one in each availability zone (eu-west-1a, eu-west-1b)
-   - Then, we attached these 2 instances and subnets to ELB
+   - After checking the instance and subnet attached to ELB, I found there is only one ec2 instance and one publicSubnetB attached to the current ELB
+   - So I created another ec2 instance (instance2) and attached it to publicSubnetB, now we have two ec2 instances, one in each availability zone (eu-west-1a, eu-west-1b)
+   - Then, we attached these two instances and subnets to ELB
    - Since we only allow HTTP, we need to configure [Healthcheck](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html) target instance to help check on HTTP protocol
 4. Verify network configuration
    - I also check the attachment of the gateway to the VPC to enable connectivity between internal and the VPC (VPCGatewayAttachment)
@@ -135,7 +134,7 @@ aws cloudformation validate-template --template-body file://$filepath
 2. The next entry point of VPC, is an **Application Load Balancer** to route all traffic only to the healthy instances of your web server. This also helps add more security due to the closure of your instance and only restricts accessibility only via the ALB.
 3. To reinforce security, using HTTPS instead of HTTP will help protect the users from man-in-the-middle attacks and make sure you configure the SSL/TLS server certificate on ALB. Apart from this, I also move the EC2 instances to private subnets and only allow traffic from ALB in **Security Group**.
 4. To set up the instance, sometimes it needs to access the internet to download some package dependencies. So I need to add **NAT gateway** to allow EC2 instances in private subnets to establish outbound connections to the internet without allowing inbound connections to the EC2 instance directly.
-5. I also added **Auto Scaling Group** with a minimum of 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower the threshold.
+5. I also added **Auto Scaling Group** with a minimum of 1 instance to improve availability and reliability. Since it will ensure the minimum number of instances to serve your service and also help increase/decrease the instance if your traffic is over/lower than the threshold.
 6. Same suggestion for the database layer, private subnet and Security Group will help ensure security. If the customer wants to go with an SQL database due to transaction guarantee, high consistency, and defined schema design, I will recommend AWS RDS with one standby database to help instantly recover when the active one is down.
 7. For cost optimization, as we know many AWS service is pay-as-you-go whichs mean you only pay for what you use. For example, Route53 will only charge for how many numbers of query. Plus, users will be only query DNS once per session. Auto Scaling Group can also lower your bills by automatically scaling up/down based on the load.
 
